@@ -20,7 +20,6 @@ module.exports = {
           800: "#1e2d5a",
           900: "#172442",
         },
-        // Keep primary colors if you're still using them elsewhere
         primary: {
           50: "#f0f5fa",
           100: "#dae5f3",

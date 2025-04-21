@@ -16,7 +16,7 @@ export default function Login() {
         try {
             const result = await login(formData);
             if (result.error) {
-                setError(result.error);
+                setLoading(false);
                 // Handle specific error messages from Supabase
                 switch (result.error) {
                     case 'Invalid login credentials':
@@ -29,10 +29,13 @@ export default function Login() {
                         setError(result.error || 'Something went wrong during signup. Please try again.');
                 }
             }
-            setLoading(false);
         } catch (error) {
+            setLoading(false);
             if (error instanceof Error) {
-                setError(error.toString());
+                // Filter out the redirect "error" which isn't really an error
+                if (!error.toString().includes('NEXT_REDIRECT')) {
+                    setError(error.toString());
+                }
             } else {
                 setError('An unexpected error occurred. Please try again later.');
             }
@@ -50,7 +53,12 @@ export default function Login() {
                 </div>
 
                 {error && (
-                    <div className="p-4 text-sm text-red-700 bg-red-50 rounded-md border border-red-200" role="alert">
+                    <div className="p-4 text-sm text-red-700 bg-red-50 rounded-md border border-red-200 relative" role="alert">
+                        <button onClick={() => setError(null)} className="text-red-700 text-sm absolute top-2 right-2 hover:cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                         {error}
                     </div>
                 )}
@@ -106,12 +114,12 @@ export default function Login() {
                 <div className="text-sm text-center">
                     <p className="mt-2">
                         Don&apos;t have an account?{' '}
-                        <Link href="/signup" className="font-medium text-navy-600 hover:text-navy-700">
+                        <Link href="/signup" className="font-medium text-(--navy-600) hover:text-(--navy-700)">
                             Sign up
                         </Link>
                     </p>
                     <p className="mt-2">
-                        <Link href="/forgot-password" className="font-medium text-navy-600 hover:text-navy-700">
+                        <Link href="/forgot-password" className="font-medium text-(--navy-600) hover:text-(--navy-700)">
                             Forgot your password?
                         </Link>
                     </p>

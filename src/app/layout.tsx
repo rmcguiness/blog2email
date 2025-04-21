@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import { AuthProvider } from "./context/AuthProvider";
+import Navbar from "@/components/NavBar/Navbar";
 
 export const metadata: Metadata = {
   title: "Blog2Email - Get blog updates in your inbox",
@@ -16,14 +15,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`antialiased bg-gray-50 min-h-screen`}
+        className={`antialiased bg-(--gray-50) min-h-screen`}
       >
-        <AuthProvider>
-          <Navbar />
-          <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-            {children}
-          </main>
-        </AuthProvider>
+        <Navbar />
+        <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+          {children}
+        </main>
       </body>
     </html>
   );

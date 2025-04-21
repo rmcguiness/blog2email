@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 :root {
   /* Base colors */
   --background: #ffffff;
@@ -7,7 +6,7 @@
 
   --white: #ffffff;
   --black: #000000;
-  
+
   /* Color palette */
   --gray-50: #f9fafb;
   --gray-100: #f3f4f6;
@@ -19,7 +18,7 @@
   --gray-700: #374151;
   --gray-800: #1f2937;
   --gray-900: #111827;
-  
+
   /* Navy blue accents */
   --navy-50: #f0f5fa;
   --navy-100: #dae5f3;
@@ -33,12 +32,12 @@
   --navy-900: #172442;
 }
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  
+
   /* Tailwind primary colors now use navy blue */
   --primary-50: var(--navy-50);
   --primary-100: var(--navy-100);
@@ -50,13 +49,6 @@
   --primary-700: var(--navy-700);
   --primary-800: var(--navy-800);
   --primary-900: var(--navy-900);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a; /* Dark navy background instead of pure black */
-    --foreground: #f8fafc;
-  }
 }
 
 body {
@@ -100,12 +92,10 @@ body {
 }
 
 /* Smooth transitions */
-a, button, input, textarea, select {
+a,
+button,
+input,
+textarea,
+select {
   transition: all 0.2s ease;
-}
-
-/* Focus styles */
-:focus {
-  outline: 2px solid var(--navy-300);
-  outline-offset: 2px;
 }

@@ -106,7 +106,12 @@ export default function AddBlogForm() {
             <h2 className="text-2xl font-bold mb-6 text-gray-800">Add a Blog</h2>
 
             {error && (
-                <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md" role="alert">
+                <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md relative" role="alert">
+                    <button onClick={() => setError(null)} className="text-red-700 text-sm absolute top-2 right-2 hover:cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                     {error}
                 </div>
             )}
@@ -129,14 +134,14 @@ export default function AddBlogForm() {
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                             placeholder="https://example.com"
-                            className="flex-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                            className="flex-1 block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-(--primary-500) focus:ring-(--primary-500)"
                             required
                         />
                         <button
                             type="button"
                             onClick={detectFeed}
                             disabled={isDetecting}
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-(--primary-600) hover:bg-(--primary-700) focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
                         >
                             {isDetecting ? 'Detecting...' : 'Detect Feed'}
                         </button>
@@ -153,10 +158,10 @@ export default function AddBlogForm() {
                         value={feedUrl}
                         onChange={(e) => setFeedUrl(e.target.value)}
                         placeholder="https://example.com/feed.xml"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                        className="block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-(--primary-500) focus:ring-(--primary-500)"
                         required
                     />
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="mt-2 text-xs text-gray-500">
                         RSS, Atom, or JSON Feed URL. Click &quot;Detect Feed&quot; to try to find it automatically.
                     </p>
                 </div>
@@ -165,7 +170,7 @@ export default function AddBlogForm() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-(--primary-600) hover:bg-(--primary-700) focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-(--primary-500) disabled:opacity-50"
                     >
                         {isLoading ? 'Adding...' : 'Add Blog'}
                     </button>

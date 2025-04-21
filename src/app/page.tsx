@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center">
       {/* Hero Section */}
-      <section className="w-full rounded-t-lg py-12 md:py-24 lg:py-32 xl:py-36 bg-gray-50">
+      <section className="w-full rounded-t-lg shadow-lg py-12 md:py-24 lg:py-32 xl:py-36 bg-gray-50">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
@@ -35,7 +35,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-white border-t border-gray-200">
+      <section className="w-full py-12 md:py-24 shadow-lg lg:py-32 bg-white border-t border-gray-200">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
@@ -49,9 +49,9 @@ export default function Home() {
           </div>
           <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3 lg:gap-12 mt-12">
             <div className="card flex flex-col items-center space-y-3 rounded-lg border border-gray-200 p-6">
-              <div className="bg-navy-100 p-3 rounded-full">
+              <div className="bg-(--navy-100) p-3 rounded-full">
                 <svg
-                  className="h-6 w-6 text-navy-600"
+                  className="h-6 w-6 text-(--navy-600)"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -72,9 +72,9 @@ export default function Home() {
               </p>
             </div>
             <div className="card flex flex-col items-center space-y-3 rounded-lg border border-gray-200 p-6">
-              <div className="bg-navy-100 p-3 rounded-full">
+              <div className="bg-(--navy-100) p-3 rounded-full">
                 <svg
-                  className="h-6 w-6 text-navy-600"
+                  className="h-6 w-6 text-(--navy-600)"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -95,9 +95,9 @@ export default function Home() {
               </p>
             </div>
             <div className="card flex flex-col items-center space-y-3 rounded-lg border border-gray-200 p-6">
-              <div className="bg-navy-100 p-3 rounded-full">
+              <div className="bg-(--navy-100) p-3 rounded-full">
                 <svg
-                  className="h-6 w-6 text-navy-600"
+                  className="h-6 w-6 text-(--navy-600)"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -122,7 +122,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="w-full rounded-b-lg py-12 md:py-24 lg:py-32 bg-gray-50 border-t border-gray-200">
+      <section className="w-full rounded-b-lg shadow-lg py-12 md:py-24 lg:py-32 bg-gray-50 border-t border-gray-200">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
@@ -136,7 +136,7 @@ export default function Home() {
             <div className="mt-6">
               <Link
                 href="/signup"
-                className="inline-flex h-11 items-center justify-center rounded-md bg-navy-600 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-navy-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 btn-primary"
+                className="inline-flex h-11 items-center justify-center rounded-md bg-(--navy-600) px-8 text-sm font-medium text-white shadow transition-colors hover:bg-(--navy-700) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 btn-primary"
               >
                 Sign Up Now
               </Link>

@@ -4,10 +4,10 @@ export default function About() {
             <section className="w-full max-w-4xl py-12 md:py-24">
                 <div className="container px-4 md:px-6">
                     <div className="flex flex-col items-center space-y-4 text-center">
-                        <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-gray-100">
+                        <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-gray-800">
                             About Blog2Email
                         </h1>
-                        <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">
+                        <p className="mx-auto max-w-[700px] text-gray-600 md:text-xl">
                             Keeping you connected to your favorite content creators
                         </p>
                     </div>

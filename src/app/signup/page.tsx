@@ -19,10 +19,9 @@ export default function Signup() {
         setError(null);
         setSuccess(null);
         try {
-            const result = await signup(formData);
-
-            if (result?.error) {
-                switch (result.error) {
+            const { error } = await signup(formData);
+            if (error) {
+                switch (error) {
                     case 'User already registered':
                         setError('This email is already registered. Please try signing in instead.');
                         break;
@@ -30,25 +29,10 @@ export default function Signup() {
                         setError('Please use a stronger password (at least 6 characters).');
                         break;
                     default:
-                        setError(result.error || 'Something went wrong during signup. Please try again.');
+                        setError(error || 'Something went wrong during signup. Please try again.');
                 }
-            }
-
-            if (result?.user) {
+            } else {
                 setSuccess('Account created successfully! Please check your email for the confirmation link.');
-                // Create user profile
-                const { error: profileError } = await supabaseClient
-                    .from('profiles')
-                    .insert([
-                        {
-                            id: result.user.id,
-                            email: result.user.email,
-                        }
-                    ]);
-
-                if (profileError) {
-                    console.error('Error creating profile:', profileError);
-                }
             }
         } catch (error) {
             if (error instanceof AuthError) {
@@ -77,7 +61,12 @@ export default function Signup() {
                 </div>
 
                 {error && (
-                    <div className="p-4 text-sm text-red-700 bg-red-50 rounded-md border border-red-200" role="alert">
+                    <div className="p-4 text-sm text-red-700 bg-red-50 rounded-md border border-red-200 relative" role="alert">
+                        <button onClick={() => setError(null)} className="text-red-700 text-sm absolute top-2 right-2 hover:cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                         {error}
                     </div>
                 )}
@@ -102,7 +91,7 @@ export default function Signup() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-navy-400 focus:border-navy-500"
+                                className="block w-full text-gray-500 px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-(--primary-400) focus:border-(--primary-500)"
                                 placeholder="you@example.com"
                             />
                         </div>
@@ -119,7 +108,7 @@ export default function Signup() {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-navy-400 focus:border-navy-500"
+                                className="block w-full text-gray-500 px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-(--primary-400) focus:border-(--primary-500)"
                                 placeholder="••••••••"
                             />
                             <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
@@ -137,7 +126,7 @@ export default function Signup() {
                                 required
                                 value={passwordConfirm}
                                 onChange={(e) => setPasswordConfirm(e.target.value)}
-                                className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-navy-400 focus:border-navy-500"
+                                className="block w-full text-gray-500 px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-(--primary-400) focus:border-(--primary-500)"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -147,7 +136,7 @@ export default function Signup() {
                         <button
                             type="submit"
                             disabled={loading || !!success}
-                            className="w-full px-4 py-2 text-sm font-medium text-white bg-navy-600 border border-transparent rounded-md shadow-sm hover:bg-navy-700 btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-500 disabled:opacity-50"
+                            className="w-full px-4 py-2 text-sm font-medium text-white bg-(--primary-600) border border-transparent rounded-md shadow-sm hover:bg-(--primary-700) focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
                         >
                             {loading ? 'Creating account...' : 'Create account'}
                         </button>
@@ -157,7 +146,7 @@ export default function Signup() {
                 <div className="text-sm text-center">
                     <p className="mt-2">
                         Already have an account?{' '}
-                        <Link href="/login" className="font-medium text-navy-600 hover:text-navy-700">
+                        <Link href="/login" className="font-medium text-(--primary-600) hover:text-(--primary-700)">
                             Sign in
                         </Link>
                     </p>
