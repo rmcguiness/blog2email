@@ -98,7 +98,7 @@ export default function Signup() {
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Password
+                                Password <span className="text-xs text-gray-500">(at least 6 characters)</span>
                             </label>
                             <input
                                 id="password"
@@ -111,7 +111,6 @@ export default function Signup() {
                                 className="block w-full text-gray-500 px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-(--primary-400) focus:border-(--primary-500)"
                                 placeholder="••••••••"
                             />
-                            <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
                         </div>
 
                         <div>
