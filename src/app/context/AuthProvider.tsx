@@ -14,7 +14,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         const setData = async () => {
             const { data: { user }, error } = await supabaseClient.auth.getUser();
-            console.log(user);
             if (error && !user) setUser(null);
             setUser(user)
             setLoading(false);

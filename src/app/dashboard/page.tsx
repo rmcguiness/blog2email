@@ -1,6 +1,4 @@
-import AddBlogForm from '@/components/AddBlogForm';
-import BlogList from '@/components/BlogList';
-import RecentPosts from '@/components/RecentPosts';
+import { AddBlogForm, BlogList, RecentPosts } from '@/components';
 
 export default function Dashboard() {
     return (
@@ -14,10 +12,10 @@ export default function Dashboard() {
                 </div>
 
                 {/* Main content */}
-                {/* <div className="w-full md:w-2/3 flex flex-col space-y-10">
+                <div className="w-full md:w-2/3 flex flex-col space-y-10">
                     <BlogList />
                     <RecentPosts />
-                </div> */}
+                </div>
             </div>
         </div>
     );

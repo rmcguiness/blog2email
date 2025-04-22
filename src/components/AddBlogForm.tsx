@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { fetchFeed } from '@/lib/rss';
+import { discoverFeedWithPlaywright, getFeedData } from '@/lib/rss';
 import { getUser } from '@/actions/auth-actions';
 import { supabaseClient } from '@/utils/supabase/client';
 
@@ -12,29 +12,30 @@ export default function AddBlogForm() {
     const [isDetecting, setIsDetecting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-
     // Function to automatically detect RSS feed URL from a blog URL
     const detectFeed = async () => {
         console.log('Detecting feed');
         if (!url) {
             setError('Please enter a blog URL');
             return;
+        } else {
+            setUrl(url.trim());
+            if (!url.startsWith('http')) {
+                setUrl(`https://${url}`);
+            }
         }
-
         setIsDetecting(true);
         setError(null);
-
         try {
             // In a real app, you'd want to do this server-side
             // This is a simplified example
-            const response = await fetch(`/api/detect-feed?url=${encodeURIComponent(url)}`);
-            const data = await response.json();
-
-            if (data.feedUrl) {
-                setFeedUrl(data.feedUrl);
+            const feedUrl = await discoverFeedWithPlaywright(url);
+            if (feedUrl) {
+                setFeedUrl(feedUrl);
                 setSuccess('Feed URL detected successfully!');
             } else {
                 setError('Could not detect feed URL. Please enter it manually.');
+                setIsDetecting(false);
             }
         } catch (err) {
             setError('Error detecting feed URL. Please enter it manually.');
@@ -59,7 +60,7 @@ export default function AddBlogForm() {
 
         try {
             // Test if the feed can be parsed
-            const feed = await fetchFeed(feedUrl);
+            const feed = await getFeedData(feedUrl);
 
             if (!feed) {
                 setError('Unable to parse the feed. Please check the feed URL.');
@@ -76,22 +77,90 @@ export default function AddBlogForm() {
                 return;
             }
 
-            const { error: insertError } = await supabaseClient
+            // Check if the blog already exists
+            const { data: existingBlog, error: fetchError } = await supabaseClient
                 .from('blogs')
-                .insert({
-                    title: feed.title || 'Unnamed Blog',
-                    url: url,
-                    feed_url: feedUrl,
-                    user_id: userData.user.id,
-                });
+                .select('*')
+                .eq('url', url)
+                .single();
 
-            if (insertError) {
-                console.error('Error adding blog:', insertError);
-                setError(insertError.message);
+            if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is the "not found" error
+                setError(`Error checking for existing blog: ${fetchError.message}`);
+                setIsLoading(false);
+                return;
+            }
+
+            // Variable to track operation success
+            let operationSuccessful = false;
+
+            if (existingBlog) {
+                // Blog exists, append user_id if not already in the array
+                const currentUserIds = existingBlog.user_id || [];
+
+                // Check if user is already subscribed
+                if (Array.isArray(currentUserIds) && currentUserIds.includes(userData.user.id)) {
+                    setSuccess('You are already subscribed to this blog!');
+                    setUrl('');
+                    setFeedUrl('');
+                    setIsLoading(false);
+                    // Still refresh the page to show the subscription
+                    operationSuccessful = true;
+                } else {
+                    // Add the current user to the array of user_ids
+                    const updatedUserIds = Array.isArray(currentUserIds)
+                        ? [...currentUserIds, userData.user.id]
+                        : [userData.user.id];
+
+                    // Update the blog with the new user_id array
+                    const { error: updateError } = await supabaseClient
+                        .from('blogs')
+                        .update({
+                            user_id: updatedUserIds,
+                        })
+                        .eq('id', existingBlog.id);
+
+                    if (updateError) {
+                        console.error('Error updating blog:', updateError);
+                        setError(updateError.message);
+                    } else {
+                        setSuccess('Successfully subscribed to this blog!');
+                        setUrl('');
+                        setFeedUrl('');
+                        operationSuccessful = true;
+                    }
+                }
             } else {
-                setSuccess('Blog added successfully!');
-                setUrl('');
-                setFeedUrl('');
+                // Blog doesn't exist, create a new record with user_id as an array
+                const { error: insertError } = await supabaseClient
+                    .from('blogs')
+                    .insert({
+                        title: feed.title || 'Unnamed Blog',
+                        url: url,
+                        feed_url: feedUrl,
+                        user_id: [userData.user.id], // Initialize as an array with the current user
+                    });
+
+                if (insertError) {
+                    console.error('Error adding blog:', insertError);
+                    setError(insertError.message);
+                } else {
+                    setSuccess('Blog added successfully!');
+                    setUrl('');
+                    setFeedUrl('');
+                    operationSuccessful = true;
+                }
+            }
+
+            // If the operation was successful, refresh the page after a short delay
+            if (operationSuccessful) {
+                // Show success message for 1.5 seconds before refreshing
+                setTimeout(() => {
+                    // Force a hard refresh to get fresh data
+                    window.location.href = '/dashboard';
+                    // Alternatively, use router.refresh() + router.push() for a smoother experience:
+                    // router.refresh(); // Tell Next.js to refresh the current route's data
+                    // router.push('/dashboard'); // Navigate to dashboard
+                }, 1500);
             }
         } catch (err) {
             setError('Error adding blog. Please try again.');

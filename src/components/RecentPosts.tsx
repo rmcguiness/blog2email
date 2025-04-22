@@ -36,7 +36,7 @@ export default function RecentPosts() {
             const { data: blogIds, error: blogIdsError } = await supabaseClient
                 .from('blogs')
                 .select('id')
-                .eq('user_id', userData.user.id);
+                .contains('user_id', [userData.user.id]);
 
             if (blogIdsError) {
                 console.error('Error fetching blog IDs:', blogIdsError);

@@ -59,6 +59,5 @@ export const getUser = async () => {
   // Get additional user data if needed
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
-  console.log(data);
   return { data, error };
 };

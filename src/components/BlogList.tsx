@@ -29,12 +29,11 @@ export default function BlogList() {
                 setIsLoading(false);
                 return;
             }
-
             // Fetch blogs for the current user
             const { data, error: blogsError } = await supabaseClient
                 .from('blogs')
                 .select('*')
-                .eq('user_id', userData.user.id)
+                .contains('user_id', [userData.user.id])
                 .order('title');
 
             if (blogsError) {

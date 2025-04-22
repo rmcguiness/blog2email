@@ -72,5 +72,5 @@ export type Database = {
 export type User = {
   id: string;
   email: string;
-  phone: string;
+  phone?: string;
 };
