@@ -1,6 +1,6 @@
 import Parser from "rss-parser";
 
-type CustomItem = {
+export type CustomItem = {
   title: string;
   link?: string;
   content?: string;
@@ -16,7 +16,7 @@ type CustomItem = {
   "dc:creator"?: string;
 };
 
-type CustomFeed = {
+export type CustomFeed = {
   title: string;
   description: string;
   link: string;
@@ -162,6 +162,7 @@ export const getFeedData = async (url: string) => {
       return directFeed;
     }
   } catch (error) {
+    console.error("Error fetching feed:", error);
     console.log("Direct fetching failed, will try discovery...");
   }
 

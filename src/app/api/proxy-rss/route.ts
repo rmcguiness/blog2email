@@ -29,10 +29,7 @@ export async function GET(request: NextRequest) {
     // Fetch the RSS feed
     const response = await fetch(url, { headers });
     const contentType = response.headers.get("Content-Type");
-    let text = await response.text();
-
-    console.log(`Response from ${url} has Content-Type: ${contentType}`);
-    console.log("First 100 chars:", text.substring(0, 100));
+    const text = await response.text();
 
     // Check if we got HTML
     if (text.trim().startsWith("<html") || text.includes("<!DOCTYPE html>")) {

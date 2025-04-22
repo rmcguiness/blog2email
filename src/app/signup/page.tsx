@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { AuthError } from '@supabase/supabase-js';
 import { signup } from '@/actions/auth-actions';
-import { supabaseClient } from '@/utils/supabase/client';
 
 export default function Signup() {
     const [email, setEmail] = useState('');

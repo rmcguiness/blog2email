@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chromium } from "playwright";
 
+interface WordPressPost {
+  title?: {
+    rendered: string;
+  };
+  link?: string;
+  date?: string | Date;
+  author_name?: string;
+  excerpt?: {
+    rendered: string;
+  };
+  content?: {
+    rendered: string;
+  };
+}
+
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get("url");
 
@@ -94,6 +109,7 @@ export async function GET(request: NextRequest) {
             try {
               return JSON.parse(document.body.innerText);
             } catch (e) {
+              console.error("Error parsing WordPress API JSON:", e);
               return null;
             }
           });
@@ -170,6 +186,7 @@ export async function GET(request: NextRequest) {
           try {
             return JSON.parse(document.body.innerText);
           } catch (e) {
+            console.error("Error parsing WordPress API JSON:", e);
             return null;
           }
         });
@@ -218,7 +235,7 @@ function escapeXml(unsafe: string): string {
 }
 
 // Helper function to generate RSS from WordPress API
-function generateRssFromWpApi(posts: any[], baseUrl: string): string {
+function generateRssFromWpApi(posts: WordPressPost[], baseUrl: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"
   xmlns:content="http://purl.org/rss/1.0/modules/content/"
@@ -236,7 +253,9 @@ function generateRssFromWpApi(posts: any[], baseUrl: string): string {
     <item>
       <title>${escapeXml(post.title?.rendered || "")}</title>
       <link>${post.link || ""}</link>
-      <pubDate>${new Date(post.date).toUTCString()}</pubDate>
+      <pubDate>${
+        post.date ? new Date(post.date).toUTCString() : new Date().toUTCString()
+      }</pubDate>
       <dc:creator>${escapeXml(post.author_name || "Author")}</dc:creator>
       <description>${escapeXml(post.excerpt?.rendered || "")}</description>
       <content:encoded>${escapeXml(

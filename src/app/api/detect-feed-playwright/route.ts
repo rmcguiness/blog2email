@@ -62,6 +62,7 @@ export async function GET(request: NextRequest) {
           try {
             return new URL(link.href, baseUrl).toString();
           } catch (e) {
+            console.error("Error processing feed link:", e);
             return null;
           }
         })

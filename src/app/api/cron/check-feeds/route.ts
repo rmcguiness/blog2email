@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { fetchFeed, extractDescription, getPublicationDate } from "@/lib/rss";
+import {
+  fetchFeedWithPlaywright,
+  extractDescription,
+  getPublicationDate,
+  CustomItem,
+} from "@/lib/rss";
 import { sendEmail, formatBlogPostEmail } from "@/lib/email";
 import { createClient } from "@/utils/supabase/server";
 // This would be called by a scheduled job (e.g., Vercel Cron or external service)
@@ -61,7 +66,7 @@ export async function GET(request: Request) {
           .eq("id", blog.id);
 
         // Fetch the feed
-        const feed = await fetchFeed(blog.feed_url);
+        const feed = await fetchFeedWithPlaywright(blog.feed_url);
 
         if (!feed || !feed.items || feed.items.length === 0) {
           results.push({ blog: blog.title, status: "No new items found" });
@@ -69,7 +74,7 @@ export async function GET(request: Request) {
         }
 
         // Sort items by date (newest first)
-        const sortedItems = feed.items.sort((a, b) => {
+        const sortedItems = feed.items.sort((a: CustomItem, b: CustomItem) => {
           return (
             getPublicationDate(b).getTime() - getPublicationDate(a).getTime()
           );
