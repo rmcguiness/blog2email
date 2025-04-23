@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/NavBar/Navbar";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "Blog2Email - Get blog updates in your inbox",
@@ -21,6 +22,7 @@ export default function RootLayout({
         <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {children}
         </main>
+        <Analytics />
       </body>
     </html>
   );
