@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/check-feeds?apiKey=$CRON_API_KEY",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 5 * * *"
     }
   ]
 }
