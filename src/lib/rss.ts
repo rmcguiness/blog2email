@@ -42,6 +42,7 @@ const parser = new Parser<CustomFeed, CustomItem>({
     ],
   },
 });
+
 /**
  * Uses Puppeteer to discover feed URLs for a website
  */
@@ -79,27 +80,44 @@ export const discoverFeedWithPlaywright = async (
 /**
  * Fetches an RSS feed using Playwright to bypass protections
  */
-export const fetchFeedWithPlaywright = async (feedUrl: string) => {
+export async function fetchFeedWithPlaywright(feedUrl: string) {
   try {
     console.log(`Fetching feed with Playwright: ${feedUrl}`);
 
-    const response = await fetch(
-      `/api/fetch-feed-playwright?url=${encodeURIComponent(feedUrl)}`
-    );
+    // Get the base URL from environment variables
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000");
+
+    // Construct the full URL
+    const fullUrl = `${baseUrl}/api/fetch-feed-playwright?url=${encodeURIComponent(
+      feedUrl
+    )}`;
+
+    const response = await fetch(fullUrl);
 
     if (!response.ok) {
-      console.error(
-        `Playwright feed fetching failed with status: ${response.status}`
-      );
-      return null;
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const text = await response.text();
+    // Check the content type of the response
+    const contentType = response.headers.get("content-type") || "";
 
-    // Parse the feed
-    const feed = await parser.parseString(text);
-    console.log("Successfully parsed feed:", feed.title);
-    return feed;
+    if (
+      contentType.includes("application/xml") ||
+      contentType.includes("text/xml")
+    ) {
+      // It's XML data - parse it with your RSS parser
+      const text = await response.text();
+
+      // Parse the XML into feed data
+      return await parser.parseString(text);
+    } else {
+      // Assume JSON for other content types
+      return await response.json();
+    }
   } catch (error) {
     console.error(
       `Error fetching feed with Playwright from ${feedUrl}:`,
@@ -107,7 +125,7 @@ export const fetchFeedWithPlaywright = async (feedUrl: string) => {
     );
     return null;
   }
-};
+}
 
 /**
  * Fetches an RSS feed with proper headers to encourage XML response

@@ -7,20 +7,34 @@ import {
 } from "@/lib/rss";
 import { sendEmail, formatBlogPostEmail } from "@/lib/email";
 import { createClient } from "@/utils/supabase/server";
+import { timingSafeEqual } from "crypto";
+
+const IS_TESTING =
+  process.env.NODE_ENV === "development" &&
+  process.env.MOCK_SERVICES === "true";
+
 // This would be called by a scheduled job (e.g., Vercel Cron or external service)
 export async function GET(request: Request) {
   try {
     const supabase = await createClient();
     // Security check - in production, you'd implement a proper API key verification
     const { searchParams } = new URL(request.url);
-    const apiKey = searchParams.get("apiKey");
+    const apiKey = searchParams.get("apiKey") || "";
+    const expectedKey = process.env.CRON_API_KEY || "";
 
-    if (apiKey !== process.env.CRON_API_KEY) {
+    // Convert strings to buffers for comparison
+    const apiKeyBuffer = Buffer.from(apiKey);
+    const expectedKeyBuffer = Buffer.from(expectedKey);
+
+    // Check if lengths match (needed for timingSafeEqual)
+    const isKeyValid =
+      apiKeyBuffer.length === expectedKeyBuffer.length &&
+      timingSafeEqual(apiKeyBuffer, expectedKeyBuffer);
+
+    if (!isKeyValid) {
       return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -59,6 +73,7 @@ export async function GET(request: Request) {
     // Process each blog
     for (const blog of blogs) {
       try {
+        console.log(`Processing blog: ${blog.title} (${blog.feed_url})`);
         // Update the last_checked timestamp
         await supabase
           .from("blogs")
@@ -66,7 +81,14 @@ export async function GET(request: Request) {
           .eq("id", blog.id);
 
         // Fetch the feed
-        const feed = await fetchFeedWithPlaywright(blog.feed_url);
+        let feed;
+        if (IS_TESTING && process.env.USE_MOCK_FEED === "true") {
+          const { getMockFeed } = await import("@/mocks/mockFeed");
+          feed = await getMockFeed();
+          console.log("Using mock feed data");
+        } else {
+          feed = await fetchFeedWithPlaywright(blog.feed_url);
+        }
 
         if (!feed || !feed.items || feed.items.length === 0) {
           results.push({ blog: blog.title, status: "No new items found" });
@@ -83,6 +105,10 @@ export async function GET(request: Request) {
         // Get the latest post
         const latestPost = sortedItems[0];
         const latestPostDate = getPublicationDate(latestPost);
+
+        console.log(
+          `Latest post found: ${latestPost?.title}, date: ${latestPostDate}`
+        );
 
         // Check if we've already processed this post
         const { data: existingPosts } = await supabase
@@ -158,40 +184,54 @@ export async function GET(request: Request) {
           continue;
         }
 
-        // Send an email notification
-        const emailHtml = formatBlogPostEmail(
-          blog.title,
-          newPost.title,
-          newPost.description,
-          newPost.url
-        );
-
-        const emailResult = await sendEmail({
-          to: user.email,
-          subject: `New Post: ${newPost.title}`,
-          html: emailHtml,
-        });
-
-        if (emailResult.success) {
-          // Update the post with the sent timestamp
-          await supabase
-            .from("blog_posts")
-            .update({ sent_at: new Date().toISOString() })
-            .eq("id", newPost.id);
-
+        if (IS_TESTING) {
+          console.log("MOCK EMAIL SEND:", {
+            to: user.email,
+            subject: `New Post: ${newPost.title}`,
+            post: newPost,
+          });
+          // Skip actual email sending
           results.push({
             blog: blog.title,
-            status: "Email sent successfully",
+            status: "Mock email logged (not sent)",
             post: newPost.title,
-            messageId: emailResult.messageId,
           });
         } else {
-          results.push({
-            blog: blog.title,
-            status: "Error sending email",
-            post: newPost.title,
-            error: emailResult.error,
+          // Send an email notification
+          const emailHtml = formatBlogPostEmail(
+            blog.title,
+            newPost.title,
+            newPost.description,
+            newPost.url
+          );
+
+          const emailResult = await sendEmail({
+            to: user.email,
+            subject: `New Post: ${newPost.title}`,
+            html: emailHtml,
           });
+
+          if (emailResult.success) {
+            // Update the post with the sent timestamp
+            await supabase
+              .from("blog_posts")
+              .update({ sent_at: new Date().toISOString() })
+              .eq("id", newPost.id);
+
+            results.push({
+              blog: blog.title,
+              status: "Email sent successfully",
+              post: newPost.title,
+              messageId: emailResult.messageId,
+            });
+          } else {
+            results.push({
+              blog: blog.title,
+              status: "Error sending email",
+              post: newPost.title,
+              error: emailResult.error,
+            });
+          }
         }
       } catch (error) {
         console.error(`Error processing blog ${blog.title}:`, error);
