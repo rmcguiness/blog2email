@@ -94,12 +94,7 @@ export default function AddBlogForm() {
 
                 // Wait 1.5 seconds then refresh
                 setTimeout(() => {
-                    // Option 1: Hard refresh (most reliable)
                     window.location.href = '/dashboard';
-
-                    // Option 2: Next.js navigation (smoother but may not refresh all data)
-                    // router.refresh();
-                    // router.push('/dashboard');
                 }, 1500);
             }
         } catch (err) {
