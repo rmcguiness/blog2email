@@ -76,7 +76,6 @@ export async function GET(request: NextRequest) {
 
     // If no feed links found, check common paths
     // (similar to your current implementation)
-
     return NextResponse.json(
       {
         feedUrls: [],
