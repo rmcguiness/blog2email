@@ -243,7 +243,7 @@ function generateRssFromWpApi(posts: WordPressPost[], baseUrl: string): string {
   xmlns:atom="http://www.w3.org/2005/Atom"
   xmlns:sy="http://purl.org/rss/1.0/modules/syndication/">
   <channel>
-    <title>${baseUrl.split("//")[1]} Feed</title>
+    <title>${baseUrl.split("//")[1]}</title>
     <link>${baseUrl}</link>
     <description>Latest posts from ${baseUrl.split("//")[1]}</description>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
