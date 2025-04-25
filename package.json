@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "check-feeds": "curl -X GET \"http://localhost:3000/api/cron/check-feeds?apiKey=$CRON_API_KEY\"",
-    "postinstall": "cp -n .env.example .env.local || true",
-    "vercel-build": "npx playwright install --with-deps chromium && next build"
+    "vercel-build": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install chromium && next build"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
