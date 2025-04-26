@@ -42,7 +42,6 @@ const parser = new Parser<CustomFeed, CustomItem>({
     ],
   },
 });
-
 /**
  * Uses Puppeteer to discover feed URLs for a website
  */
